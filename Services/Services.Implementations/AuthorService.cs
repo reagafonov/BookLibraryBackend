@@ -11,19 +11,11 @@ namespace Services.Implementations
     /// <summary>
     /// Сервис работы с авторами
     /// </summary>
-    public class AuthorService : IAuthorService
+    public class AuthorService(
+        IMapper mapper,
+        IAuthorRepository authorRepository,
+        IValidateDto<AuthorDto> authorDtoValidator) : IAuthorService
     {
-        private readonly IAuthorRepository _authorRepository;
-        private readonly IMapper _mapper;
-
-        public AuthorService(
-            IMapper mapper,
-            IAuthorRepository authorRepository)
-        {
-            _mapper = mapper;
-            _authorRepository = authorRepository;
-        }
-
         /// <summary>
         /// Получить список
         /// </summary>
@@ -32,8 +24,8 @@ namespace Services.Implementations
         /// <returns>список авторов</returns>
         public async Task<ICollection<AuthorDto>> GetPaged(int page, int pageSize)
         {
-            ICollection<Author> entities = await _authorRepository.GetPagedAsync(page, pageSize);
-            return _mapper.Map<ICollection<Author>, ICollection<AuthorDto>>(entities);
+            ICollection<Author> entities = await authorRepository.GetPagedAsync(page, pageSize);
+            return mapper.Map<ICollection<Author>, ICollection<AuthorDto>>(entities);
         }
 
         /// <summary>
@@ -43,8 +35,8 @@ namespace Services.Implementations
         /// <returns>ДТО автора</returns>
         public async Task<AuthorDto> GetById(int id)
         {
-            var lesson = await _authorRepository.GetAsync(id);
-            return _mapper.Map<AuthorDto>(lesson);
+            var author = await authorRepository.GetAsync(id);
+            return mapper.Map<AuthorDto>(author);
         }
 
         /// <summary>
@@ -54,9 +46,10 @@ namespace Services.Implementations
         /// <returns>идентификатор</returns>
         public async Task<int> Create(AuthorDto authorDto)
         {
-            var entity = _mapper.Map<Author>(authorDto);
-            var res = await _authorRepository.AddAsync(entity);
-            await _authorRepository.SaveChangesAsync();
+            authorDtoValidator.Validate(authorDto);
+            var entity = mapper.Map<Author>(authorDto);
+            var res = await authorRepository.AddAsync(entity);
+            await authorRepository.SaveChangesAsync();
             return res.Id;
         }
 
@@ -67,10 +60,11 @@ namespace Services.Implementations
         /// <param name="authorDto">ДТО автора</param>
         public async Task Update(int id, AuthorDto authorDto)
         {
-            var entity = _mapper.Map<Author>(authorDto);
+            authorDtoValidator.Validate(authorDto);
+            var entity = mapper.Map<Author>(authorDto);
             entity.Id = id;
-            _authorRepository.Update(entity);
-            await _authorRepository.SaveChangesAsync();
+            authorRepository.Update(entity);
+            await authorRepository.SaveChangesAsync();
         }
 
         /// <summary>
@@ -79,9 +73,9 @@ namespace Services.Implementations
         /// <param name="id">идентификатор</param>
         public async Task Delete(int id)
         {
-            var lesson = await _authorRepository.GetAsync(id);
-            lesson.Deleted = true;
-            await _authorRepository.SaveChangesAsync();
+            var author = await authorRepository.GetAsync(id);
+            author.Deleted = true;
+            await authorRepository.SaveChangesAsync();
         }
     }
 }

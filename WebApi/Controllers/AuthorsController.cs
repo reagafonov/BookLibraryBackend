@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -9,51 +10,82 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    /// <summary>
+    /// CRUD для авторов
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class AuthorsController : ControllerBase
+    public class AuthorsController(IAuthorService service, ILogger<AuthorsController> logger, IMapper mapper)
+        : ControllerBase
     {
-        private readonly ILogger<AuthorsController> _logger;
-        private readonly IMapper _mapper;
-        private IAuthorService _service;
-
-        public AuthorsController(IAuthorService service, ILogger<AuthorsController> logger, IMapper mapper)
-        {
-            _service = service;
-            _logger = logger;
-            _mapper = mapper;
-        }
-
+        /// <summary>
+        /// Получение карточки автора
+        /// </summary>
+        /// <param name="id">Идентификатор автора</param>
+        /// <returns>Карточка автора</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok(_mapper.Map<AuthorModel>(await _service.GetById(id)));
+            logger.LogInformation($"Получение карточки автора по ID {id}");
+            return Ok(mapper.Map<AuthorOutputModel>(await service.GetById(id)));
         }
 
+        /// <summary>
+        /// Добавление карточки автора
+        /// </summary>
+        /// <param name="authorInputModel">Карточка автора</param>
+        /// <returns>Идентификатор созданной карточки автора</returns>
         [HttpPost]
-        public async Task<IActionResult> Add(AuthorModel authorDto)
+        public async Task<IActionResult> Add(AuthorInputModel authorInputModel)
         {
-            return Ok(await _service.Create(_mapper.Map<AuthorDto>(authorDto)));
+            if (!ModelState.IsValid)
+            {
+                var modelStateErrors = ModelState.SelectMany(x => x.Value.Errors)
+                    .SelectMany(x => x.ErrorMessage);
+                var errors = string.Join('\n', modelStateErrors);
+                return BadRequest(errors);
+            }
+
+            return Ok(await service.Create(mapper.Map<AuthorDto>(authorInputModel)));
         }
 
+        /// <summary>
+        /// Редактирование карточки автора
+        /// </summary>
+        /// <param name="id">Идентификатор карточки автора</param>
+        /// <param name="authorInputModel">Новые значения полей карточки автора</param>
+        /// <returns>Статус операции</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, AuthorModel authorDto)
+        public async Task<IActionResult> Edit(int id, AuthorInputModel authorInputModel)
         {
-            await _service.Update(id, _mapper.Map<AuthorDto>(authorDto));
+            logger.LogInformation($"Редактирование карточки автора по ID {id} данными {authorInputModel}");
+            await service.Update(id, mapper.Map<AuthorDto>(authorInputModel));
             return Ok();
         }
 
+        /// <summary>
+        /// Удаление карточки автора
+        /// </summary>
+        /// <param name="id">Идентификатор карточки</param>
+        /// <returns>Статус операции</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.Delete(id);
+            logger.LogInformation($"Удаление карточки автора по ID {id}");
+            await service.Delete(id);
             return Ok();
         }
 
+        /// <summary>
+        /// Получение списка авторов 
+        /// </summary>
+        /// <param name="page">Страница</param>
+        /// <param name="itemsPerPage">Число записей на странице</param>
+        /// <returns>Список карточек авторов</returns>
         [HttpGet("list/{page}/{itemsPerPage}")]
         public async Task<IActionResult> GetList(int page, int itemsPerPage)
         {
-            return Ok(_mapper.Map<List<AuthorModel>>(await _service.GetPaged(page, itemsPerPage)));
+            return Ok(mapper.Map<List<AuthorOutputModel>>(await service.GetPaged(page, itemsPerPage)));
         }
     }
 }

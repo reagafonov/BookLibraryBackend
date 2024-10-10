@@ -1,13 +1,17 @@
 ﻿using System.Collections.Generic;
-using Services.Contracts;
 
 namespace WebApi.Models
 {
     /// <summary>
     /// Модель книги
     /// </summary>
-    public class BookModel
+    public record BookOutputModel
     {
+        /// <summary>
+        /// Идентификатор
+        /// </summary>
+        public int Id { get; init; }
+
         /// <summary>
         /// Название книги
         /// </summary>
@@ -21,11 +25,11 @@ namespace WebApi.Models
         /// <summary>
         /// Автор
         /// </summary>
-        public AuthorDto MainAuthor { get; init; }
+        public string MainAuthor { get; init; }
 
         /// <summary>
         /// Соавторы книги
         /// </summary>
-        public List<AuthorDto> CoAuthors { get; init; }
+        public List<string> CoAuthors { get; init; }
     }
 }

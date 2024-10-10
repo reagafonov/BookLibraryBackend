@@ -11,49 +11,69 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BooksController : ControllerBase
+    public class BooksController(IBookService service, ILogger<BooksController> logger, IMapper mapper)
+        : ControllerBase
     {
-        private readonly ILogger<BooksController> _logger;
-        private IMapper _mapper;
-        private IBookService _service;
-
-        public BooksController(IBookService service, ILogger<BooksController> logger, IMapper mapper)
-        {
-            _service = service;
-            _logger = logger;
-            _mapper = mapper;
-        }
-
+        /// <summary>
+        /// Получение карточки книги
+        /// </summary>
+        /// <param name="id">Идентификатор книги</param>
+        /// <returns>Карточка книги</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok(_mapper.Map<BookModel>(await _service.GetById(id)));
+            logger.LogInformation($"Получение карточки книги по ID {id}");
+            return Ok(mapper.Map<BookOutputModel>(await service.GetById(id)));
         }
 
+        /// <summary>
+        /// Добавление карточки книги
+        /// </summary>
+        /// <param name="bookInputModel">Карточка книги</param>
+        /// <returns>Идентификатор созданной карточки книги</returns>
         [HttpPost]
-        public async Task<IActionResult> Add(BookModel bookModel)
+        public async Task<IActionResult> Add(BookInputModel bookInputModel)
         {
-            return Ok(await _service.Create(_mapper.Map<BookDto>(bookModel)));
+            return Ok(await service.Create(mapper.Map<BookDto>(bookInputModel)));
         }
 
+        /// <summary>
+        /// Редактирование карточки книги
+        /// </summary>
+        /// <param name="id">Идентификатор карточки книги</param>
+        /// <param name="bookInputModel">Новые значения полей карточки книги</param>
+        /// <returns>Статус операции</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, BookModel bookModel)
+        public async Task<IActionResult> Edit(int id, BookInputModel bookInputModel)
         {
-            await _service.Update(id, _mapper.Map<BookDto>(bookModel));
+            logger.LogInformation($"Редактирование карточки книги по ID {id} данными {bookInputModel}");
+            await service.Update(id, mapper.Map<BookDto>(bookInputModel));
             return Ok();
         }
 
+        /// <summary>
+        /// Удаление карточки книги
+        /// </summary>
+        /// <param name="id">Идентификатор карточки</param>
+        /// <returns>Статус операции</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.Delete(id);
+            logger.LogInformation($"Удаление карточки книги по ID {id}");
+            await service.Delete(id);
             return Ok();
         }
 
+        /// <summary>
+        /// Получение списка книг 
+        /// </summary>
+        /// <param name="page">Страница</param>
+        /// <param name="itemsPerPage">Число записей на странице</param>
+        /// <returns>Список карточек книг</returns>
         [HttpGet("list/{page}/{itemsPerPage}")]
         public async Task<IActionResult> GetList(int page, int itemsPerPage)
         {
-            return Ok(_mapper.Map<List<BookModel>>(await _service.GetPaged(page, itemsPerPage)));
+            return Ok(mapper.Map<List<BookOutputModel>>(await service.GetPaged(page, itemsPerPage)));
         }
     }
 }

@@ -14,8 +14,10 @@ namespace Services.Implementations.Mapping
             CreateMap<Book, BookDto>();
 
             CreateMap<BookDto, Book>()
-                .ForMember(d => d.Id, map => map.Ignore())
-                .ForMember(d => d.Deleted, map => map.Ignore());
+                .ForMember(book => book.Id, expression => expression.Ignore())
+                .ForMember(book => book.Deleted, expression => expression.Ignore())
+                .ForMember(book => book.MainAuthor, expression => expression.Ignore())
+                .ForMember(book => book.CoAuthors, expression => expression.Ignore());
         }
     }
 }

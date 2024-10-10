@@ -3,6 +3,7 @@ using Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Abstractions;
+using Services.Contracts;
 using Services.Implementations;
 using Services.Repositories.Abstractions;
 using WebApi.Settings;
@@ -28,7 +29,11 @@ namespace WebApi
         {
             serviceCollection
                 .AddTransient<IBookService, BookService>()
-                .AddTransient<IAuthorService, AuthorService>();
+                .AddTransient<IAuthorService, AuthorService>()
+                .AddTransient<IValidateDto<AuthorDto>, AuthorValidate>()
+                .AddTransient<IValidateDto<BookDto>, BookValidation>();
+
+
             return serviceCollection;
         }
 

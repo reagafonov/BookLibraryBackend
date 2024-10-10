@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Services.Contracts
+namespace WebApi.Models
 {
     /// <summary>
-    /// ДТО книги
+    /// Модель книги
     /// </summary>
-    public class BookDto
+    public record BookInputModel
     {
-        public int Id { get; set; }
-
         /// <summary>
         /// Название книги
         /// </summary>
@@ -22,11 +20,11 @@ namespace Services.Contracts
         /// <summary>
         /// Автор
         /// </summary>
-        public AuthorDto MainAuthor { get; init; }
+        public int MainAuthorID { get; init; }
 
         /// <summary>
         /// Соавторы книги
         /// </summary>
-        public ICollection<AuthorDto> CoAuthors { get; init; }
+        public List<int> CoAuthorsIDs { get; init; }
     }
 }

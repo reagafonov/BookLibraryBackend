@@ -11,12 +11,8 @@ namespace Infrastructure.Repositories.Implementations
     /// <summary>
     /// Репозиторий работы с авторами
     /// </summary>
-    public class AuthorRepository : Repository<Author, int>, IAuthorRepository
+    public class AuthorRepository(DatabaseContext context) : Repository<Author, int>(context), IAuthorRepository
     {
-        public AuthorRepository(DatabaseContext context) : base(context)
-        {
-        }
-
         /// <summary>
         /// Получить постраничный список
         /// </summary>

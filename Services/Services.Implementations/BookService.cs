@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Entities.Exceptions;
 using Services.Abstractions;
 using Services.Contracts;
 using Services.Repositories.Abstractions;
@@ -11,19 +13,12 @@ namespace Services.Implementations
     /// <summary>
     /// Cервис работы с книгами
     /// </summary>
-    public class BookService : IBookService
+    public class BookService(
+        IMapper mapper,
+        IBookRepository bookRepository,
+        IAuthorRepository authorRepository,
+        IValidateDto<BookDto> bookValidation) : IBookService
     {
-        private readonly IBookRepository _bookRepository;
-        private readonly IMapper _mapper;
-
-        public BookService(
-            IMapper mapper,
-            IBookRepository bookRepository)
-        {
-            _mapper = mapper;
-            _bookRepository = bookRepository;
-        }
-
         /// <summary>
         /// Получить список
         /// </summary>
@@ -32,8 +27,8 @@ namespace Services.Implementations
         /// <returns>список книг</returns>
         public async Task<ICollection<BookDto>> GetPaged(int page, int pageSize)
         {
-            ICollection<Book> entities = await _bookRepository.GetPagedAsync(page, pageSize);
-            return _mapper.Map<ICollection<Book>, ICollection<BookDto>>(entities);
+            ICollection<Book> entities = await bookRepository.GetPagedAsync(page, pageSize);
+            return mapper.Map<ICollection<Book>, ICollection<BookDto>>(entities);
         }
 
         /// <summary>
@@ -43,8 +38,8 @@ namespace Services.Implementations
         /// <returns>ДТО книги</returns>
         public async Task<BookDto> GetById(int id)
         {
-            var course = await _bookRepository.GetAsync(id);
-            return _mapper.Map<BookDto>(course);
+            var book = await bookRepository.GetAsync(id);
+            return mapper.Map<BookDto>(book);
         }
 
         /// <summary>
@@ -54,9 +49,39 @@ namespace Services.Implementations
         /// <returns>идентификатор</returns>
         public async Task<int> Create(BookDto bookDto)
         {
-            var entity = _mapper.Map<BookDto, Book>(bookDto);
-            var res = await _bookRepository.AddAsync(entity);
-            await _bookRepository.SaveChangesAsync();
+            bookValidation.Validate(bookDto);
+            var entity = mapper.Map<BookDto, Book>(bookDto);
+
+            if (bookDto.MainAuthor.Id != default)
+                entity.MainAuthorId = bookDto.MainAuthor.Id;
+
+            var res = await bookRepository.AddAsync(entity);
+
+            res.CoAuthors ??= new List<Author>();
+
+            //Не добавленные авторы
+            var coAuthorsToAdd = bookDto.CoAuthors.Where(coAuthor => coAuthor.Id == default)
+                .Select(mapper.Map<Author>).ToList();
+
+            foreach (var author in coAuthorsToAdd)
+            {
+                var addedAuthor = await authorRepository.AddAsync(author);
+                res.CoAuthors.Add(addedAuthor);
+            }
+
+            //добавленные авторы
+            var coAuthorsIds = bookDto.CoAuthors.Where(coAuthor => coAuthor.Id != default)
+                .Select(coAuthor => coAuthor.Id).ToArray();
+            foreach (var coAuthorsId in coAuthorsIds)
+            {
+                var coAuthor = await authorRepository.GetAsync(coAuthorsId);
+                if (coAuthor is null)
+                    throw new CRUDUpdateException($"Не найден соавтор с ID {coAuthorsId}");
+                res.CoAuthors.Add(coAuthor);
+            }
+
+            await bookRepository.SaveChangesAsync();
+
             return res.Id;
         }
 
@@ -67,10 +92,11 @@ namespace Services.Implementations
         /// <param name="bookDto">ДТО книги</param>
         public async Task Update(int id, BookDto bookDto)
         {
-            var entity = _mapper.Map<BookDto, Book>(bookDto);
+            bookValidation.Validate(bookDto);
+            var entity = mapper.Map<BookDto, Book>(bookDto);
             entity.Id = id;
-            _bookRepository.Update(entity);
-            await _bookRepository.SaveChangesAsync();
+            bookRepository.Update(entity);
+            await bookRepository.SaveChangesAsync();
         }
 
         /// <summary>
@@ -79,9 +105,9 @@ namespace Services.Implementations
         /// <param name="id">идентификатор</param>
         public async Task Delete(int id)
         {
-            var course = await _bookRepository.GetAsync(id);
-            course.Deleted = true;
-            await _bookRepository.SaveChangesAsync();
+            var book = await bookRepository.GetAsync(id);
+            book.Deleted = true;
+            await bookRepository.SaveChangesAsync();
         }
     }
 }

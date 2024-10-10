@@ -12,12 +12,14 @@ namespace Domain.Entities
         /// Фамилия автора
         /// </summary>
         [StringLength(500)]
+        [Required]
         public string LastName { get; set; }
 
         /// <summary>
         /// Имя автора
         /// </summary>
         [StringLength(500)]
+        [Required]
         public string FirstName { get; set; }
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace Domain.Entities
         /// <summary>
         /// Книги, в которых автор был соавтором
         /// </summary>
-        public virtual ICollection<Book> BooksCoAuthor { get; init; }
+        public virtual ICollection<Book> BookCoAuthors { get; init; }
 
         /// <summary>
         /// Удалено
