@@ -28,14 +28,14 @@ public class AuthorNameLanguageValidationAttribute : ValidationAttribute
     /// </summary>
     /// <param name="data">текст</param>
     /// <returns>Истина, если текст на английском</returns>
-    private bool IsEnglish(string data) => Regex.Match(data, @"^[\p{IsBasicLatin}\p{P}\s]+$").Success;
+    private bool IsEnglish(string data) => Regex.Match(data, @"^[\p{IsBasicLatin}\p{P}\d\s ]+$").Success;
 
     /// <summary>
     /// Проверяет является ли строка текстом на русском языке
     /// </summary>
     /// <param name="data">текст</param>
     /// <returns>Истина, если текст на русском</returns>
-    private bool IsRussian(string data) => Regex.Match(data, @"^[\p{IsCyrillic}\p{P}\s]+$").Success;
+    private bool IsRussian(string data) => Regex.Match(data, @"^[\p{IsCyrillic}\p{P}\d\s ]+$").Success;
 
     private LanguageEnum? GetLanguage(string data)
     {
@@ -71,7 +71,7 @@ public class AuthorNameLanguageValidationAttribute : ValidationAttribute
 
             if (firstNameLanguage != lastNameLanguage)
             {
-                return Error($"Ошибка. Разные языки имени ({firstNameLanguage}) и фамилии ({lastNameLanguage})");
+                return Error($"Разные языки имени ({firstNameLanguage}) и фамилии ({lastNameLanguage})");
             }
 
             return true;

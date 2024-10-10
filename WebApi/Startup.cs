@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Services.Abstractions.Exceptions;
 using WebApi.Mapping;
 
 namespace WebApi
@@ -77,7 +78,13 @@ namespace WebApi
                         if (exceptionHandlerPathFeature?.Error is CRUDUpdateException)
                         {
                             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                            responseBuilder.AppendLine($"Ошибка записи данных");
+                            responseBuilder.AppendLine($"Ошибка записи данных").AppendLine(crud.Message);
+                        }
+
+                        if (exceptionHandlerPathFeature?.Error is DtoValidationException dtoValidation)
+                        {
+                            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                            responseBuilder.AppendLine($"Ошибка валидации данных:").AppendLine(dtoValidation.Message);
                         }
 
                         await context.Response.WriteAsync(responseBuilder.ToString());
@@ -91,6 +98,7 @@ namespace WebApi
 
             app.UseAuthorization();
 
+            //включено для демонстрации
             //if (!env.IsProduction())
             {
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
