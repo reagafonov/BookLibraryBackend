@@ -75,7 +75,7 @@ namespace WebApi
                         var exceptionHandlerPathFeature =
                             context.Features.Get<IExceptionHandlerPathFeature>();
 
-                        if (exceptionHandlerPathFeature?.Error is CRUDUpdateException)
+                        if (exceptionHandlerPathFeature?.Error is CRUDUpdateException crud)
                         {
                             context.Response.StatusCode = StatusCodes.Status400BadRequest;
                             responseBuilder.AppendLine($"Ошибка записи данных").AppendLine(crud.Message);
