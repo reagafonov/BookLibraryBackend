@@ -21,10 +21,12 @@ namespace Services.Implementations
         /// </summary>
         /// <param name="page">номер страницы</param>
         /// <param name="pageSize">объем страницы</param>
+        /// <param name="filterDto">Фильтр</param>
         /// <returns>список авторов</returns>
-        public async Task<ICollection<AuthorDto>> GetPaged(int page, int pageSize)
+        public async Task<ICollection<AuthorDto>> GetPaged(int page, int pageSize, AuthorFilterDto filterDto)
         {
-            ICollection<Author> entities = await authorRepository.GetPagedAsync(page, pageSize);
+            var filter = mapper.Map<AuthorFilter>(filterDto);
+            ICollection<Author> entities = await authorRepository.GetPagedAsync(page, pageSize, filter);
             return mapper.Map<ICollection<Author>, ICollection<AuthorDto>>(entities);
         }
 

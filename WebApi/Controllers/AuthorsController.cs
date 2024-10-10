@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -38,14 +37,6 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AuthorInputModel authorInputModel)
         {
-            if (!ModelState.IsValid)
-            {
-                var modelStateErrors = ModelState.SelectMany(x => x.Value.Errors)
-                    .SelectMany(x => x.ErrorMessage);
-                var errors = string.Join('\n', modelStateErrors);
-                return BadRequest(errors);
-            }
-
             return Ok(await service.Create(mapper.Map<AuthorDto>(authorInputModel)));
         }
 
@@ -79,13 +70,16 @@ namespace WebApi.Controllers
         /// <summary>
         /// Получение списка авторов 
         /// </summary>
-        /// <param name="page">Страница</param>
-        /// <param name="itemsPerPage">Число записей на странице</param>
+        /// <param name="filter">фильтр</param>
+        /// <param name="page">номер страницы</param>
+        /// <param name="itemsPerPage">число записей на странице</param>
         /// <returns>Список карточек авторов</returns>
-        [HttpGet("list/{page}/{itemsPerPage}")]
-        public async Task<IActionResult> GetList(int page, int itemsPerPage)
+        [HttpGet("list/{page}/{itemsPerPage}/")]
+        public async Task<IActionResult> GetList([FromQuery] AuthorFilterModel filter, [FromRoute] int page = 1,
+            [FromRoute] int itemsPerPage = 10)
         {
-            return Ok(mapper.Map<List<AuthorOutputModel>>(await service.GetPaged(page, itemsPerPage)));
+            var filterDto = mapper.Map<AuthorFilterDto>(filter);
+            return Ok(mapper.Map<List<AuthorOutputModel>>(await service.GetPaged(page, itemsPerPage, filterDto)));
         }
     }
 }
