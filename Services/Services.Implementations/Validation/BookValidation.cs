@@ -1,3 +1,4 @@
+using System.Linq;
 using Domain.Entities;
 using Services.Contracts;
 
@@ -20,5 +21,7 @@ public class BookValidation : ValidationBase<BookDto>
             $"Превышена длина поля {nameof(Book.Title)}");
         CheckStringLength(dto.Description, DomainConstraints.BookDescriptionMaxLength,
             $"Превышена длина поля {nameof(Book.Description)}");
+        if (dto.CoAuthors.Select(x => x.Id).Contains(dto.MainAuthor.Id))
+            AddError("Автор указан как соавтор");
     }
 }
