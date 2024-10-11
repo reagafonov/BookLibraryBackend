@@ -1,32 +1,31 @@
 ﻿using System.Collections.Generic;
 
-namespace Services.Contracts
+namespace Services.Contracts;
+
+/// <summary>
+/// ДТО книги
+/// </summary>
+public class BookDto
 {
+    public int Id { get; init; }
+
     /// <summary>
-    /// ДТО книги
+    /// Название книги
     /// </summary>
-    public class BookDto
-    {
-        public int Id { get; set; }
+    public string? Title { get; init; }
 
-        /// <summary>
-        /// Название книги
-        /// </summary>
-        public string Title { get; init; }
+    /// <summary>
+    /// Описание книги
+    /// </summary>
+    public string? Description { get; init; }
 
-        /// <summary>
-        /// Описание книги
-        /// </summary>
-        public string Description { get; init; }
+    /// <summary>
+    /// Автор
+    /// </summary>
+    public AuthorDto? MainAuthor { get; init; }
 
-        /// <summary>
-        /// Автор
-        /// </summary>
-        public AuthorDto MainAuthor { get; init; }
-
-        /// <summary>
-        /// Соавторы книги
-        /// </summary>
-        public ICollection<AuthorDto> CoAuthors { get; init; }
-    }
+    /// <summary>
+    /// Соавторы книги
+    /// </summary>
+    public ICollection<AuthorDto>? CoAuthors { get; init; }
 }

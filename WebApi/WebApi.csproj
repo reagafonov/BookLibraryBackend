@@ -5,6 +5,7 @@
         <UserSecretsId>237b8f20-547a-4cfa-8c3b-a03ffae330fc</UserSecretsId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

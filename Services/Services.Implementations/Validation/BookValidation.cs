@@ -2,7 +2,7 @@ using System.Linq;
 using Domain.Entities;
 using Services.Contracts;
 
-namespace Services.Implementations;
+namespace Services.Implementations.Validation;
 
 /// <summary>
 /// Проверка правильности заполнения dto книги 
@@ -16,12 +16,12 @@ public class BookValidation : ValidationBase<BookDto>
         if (DomainConstraints.BookTitleIsRequired)
             CheckRequired(dto.Title, $"Поле {nameof(BookDto.Title)} не заполнено");
         if (DomainConstraints.BookMainAuthorIdIsRequired)
-            CheckRequired(dto.MainAuthor.Id, $"Поле {nameof(BookDto.MainAuthor.Id)} не заполнено");
+            CheckRequired(dto.MainAuthor?.Id, $"Поле {nameof(BookDto.MainAuthor.Id)} не заполнено");
         CheckStringLength(dto.Title, DomainConstraints.BookTitleMaxLength,
             $"Превышена длина поля {nameof(Book.Title)}");
         CheckStringLength(dto.Description, DomainConstraints.BookDescriptionMaxLength,
             $"Превышена длина поля {nameof(Book.Description)}");
-        if (dto.CoAuthors.Select(x => x.Id).Contains(dto.MainAuthor.Id))
+        if (dto.MainAuthor is not null && (dto.CoAuthors?.Select(x => x.Id).Contains(dto.MainAuthor.Id) ?? false))
             AddError("Автор указан как соавтор");
     }
 }

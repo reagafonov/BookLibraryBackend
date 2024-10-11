@@ -5,7 +5,7 @@ namespace Services.Repositories.Abstractions;
 /// <summary>
 /// Фильтрация по полям класса из фильтра
 /// </summary>
-public interface ISimpleFilterQuery<TEntity, TFilter>
+public interface ISimpleFilterQuery<TEntity, in TFilter>
 {
     /// <summary>
     /// Добавляет запрос с фильтром по простым полям класса

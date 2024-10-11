@@ -9,21 +9,25 @@ public class BookFilterModel
     /// <summary>
     /// Часть названия
     /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? Title { get; init; }
 
     /// <summary>
     /// Часть описания
     /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? Description { get; init; }
 
     /// <summary>
     /// Поля фильтра по главному автору
     /// </summary>
-    public AuthorFilterModel? MainAuthor { get; init; } = new();
+    // ReSharper disable once UnusedMember.Global
+    public AuthorFilterModel? MainAuthor { get; init; }
 
     /// <summary>
     /// Поля для фильтрации по соавторам
     /// </summary>
     /// <remarks>Применяется или</remarks>
-    public AuthorFilterModel CoAuthor { get; set; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public AuthorFilterModel? CoAuthor { get; set; }
 }

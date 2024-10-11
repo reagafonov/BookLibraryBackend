@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <AssemblyName>Services.Implementations</AssemblyName>
         <RootNamespace>Services.Implementations</RootNamespace>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

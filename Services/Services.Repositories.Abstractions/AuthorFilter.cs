@@ -1,4 +1,3 @@
-#nullable enable
 namespace Services.Repositories.Abstractions;
 
 public class AuthorFilter

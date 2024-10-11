@@ -3,7 +3,7 @@ using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.EntityFramework.Configuration;
+namespace Infrastructure.EntityFramework.NPgSqlConfiguration;
 
 public class BookConfiguration : IEntityTypeConfiguration<Book>
 {

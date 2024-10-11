@@ -1,4 +1,3 @@
-#nullable enable
 namespace Services.Abstractions;
 
 /// <summary>
@@ -19,7 +18,7 @@ public class BookFilterDto
     /// <summary>
     /// Поля фильтра по главному автору
     /// </summary>
-    public AuthorFilterDto? MainAuthor { get; init; } = new();
+    public AuthorFilterDto? MainAuthor { get; init; }
 
     /// <summary>
     /// Поля для фильтрации по соавторам

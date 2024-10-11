@@ -20,7 +20,7 @@ public class BookSimpleFilterQuery : ISimpleFilterQuery<Book, BookFilter>
         if (!string.IsNullOrWhiteSpace(filter.Title))
             query = query.Where(book => book.Title.Contains(filter.Title));
         if (!string.IsNullOrWhiteSpace(filter.Description))
-            query = query.Where(book => book.Description.Contains(filter.Description));
+            query = query.Where(book => book.Description!.Contains(filter.Description));
         return query;
     }
 }

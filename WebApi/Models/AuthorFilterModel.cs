@@ -9,10 +9,12 @@ public class AuthorFilterModel
     /// <summary>
     /// Шаблон фильтра по имени
     /// </summary>
-    public string FirstName { get; init; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public string? FirstName { get; init; }
 
     /// <summary>
     /// Шаблон фильтра по фамилии
     /// </summary>
-    public string LastName { get; init; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public string? LastName { get; init; }
 }

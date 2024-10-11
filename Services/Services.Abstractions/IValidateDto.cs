@@ -1,6 +1,6 @@
 namespace Services.Abstractions;
 
-public interface IValidateDto<TDto>
+public interface IValidateDto<in TDto>
 {
     void Validate(TDto dto);
 }

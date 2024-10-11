@@ -17,7 +17,7 @@ public class AuthorSimpleFilterQuery : ISimpleFilterQuery<Author, AuthorFilter>
         if (!string.IsNullOrWhiteSpace(filter.FirstName))
             query = query.Where(author => author.FirstName.Contains(filter.FirstName));
         if (!string.IsNullOrWhiteSpace(filter.LastName))
-            query = query.Where(author => author.LastName.Contains(filter.LastName));
+            query = query.Where(author => author.LastName!.Contains(filter.LastName));
         return query;
     }
 }

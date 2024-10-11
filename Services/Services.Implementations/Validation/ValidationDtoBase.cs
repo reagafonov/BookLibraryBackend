@@ -1,17 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
 using Services.Abstractions;
 using Services.Abstractions.Exceptions;
 
-namespace Services.Implementations;
+namespace Services.Implementations.Validation;
 
 public abstract class ValidationBase<TDto> : IValidateDto<TDto>
 {
     private readonly ICollection<string> _errors = new HashSet<string>();
 
-    public bool HasErrors => _errors.Any();
-
-    public IEnumerable<string> Errors => _errors;
+    private bool HasErrors => _errors.Count != 0;
 
     public void Validate(TDto dto)
     {
@@ -36,8 +33,10 @@ public abstract class ValidationBase<TDto> : IValidateDto<TDto>
             AddError(GetRequiredErrorString(fieldName));
     }
 
-    protected void CheckStringLength(string data, int maxLength, string fieldName)
+    protected void CheckStringLength(string? data, int maxLength, string fieldName)
     {
+        if (data is null)
+            return;
         if (data.Length > maxLength)
             AddError(GetMaxLengthErrorString(fieldName, maxLength));
     }

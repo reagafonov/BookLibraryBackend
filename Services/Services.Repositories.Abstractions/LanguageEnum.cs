@@ -1,4 +1,4 @@
-namespace WebApi.Validation;
+namespace Services.Repositories.Abstractions;
 
 public enum LanguageEnum
 {
