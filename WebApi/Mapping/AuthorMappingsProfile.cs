@@ -1,6 +1,7 @@
 using AutoMapper;
 using Services.Abstractions;
 using Services.Contracts;
+using WebApi.Extensions;
 using WebApi.Models;
 
 namespace WebApi.Mapping
@@ -15,10 +16,12 @@ namespace WebApi.Mapping
             CreateMap<AuthorDto, AuthorOutputModel>();
             CreateMap<AuthorInputModel, AuthorDto>()
                 .ForMember(dto => dto.Id, expression => expression.Ignore())
-                .ForMember(dto => dto.FirstName, expression => expression.MapFrom(model => model.FirstName.Trim()))
-                .ForMember(dto => dto.LastName, expression => expression.MapFrom(model => model.LastName.Trim()));
-            ;
-            CreateMap<AuthorFilterModel, AuthorFilterDto>();
+                .ForMemberTrim(dto => dto.FirstName, model => model.FirstName)
+                .ForMemberTrim(dto => dto.LastName, model => model.LastName);
+
+            CreateMap<AuthorFilterModel, AuthorFilterDto>()
+                .ForMemberTrim(x => x.FirstName, x => x.FirstName)
+                .ForMemberTrim(x => x.LastName, x => x.LastName);
         }
     }
 }

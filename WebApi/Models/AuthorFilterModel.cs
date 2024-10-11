@@ -2,7 +2,6 @@ namespace WebApi.Models;
 
 /// <summary>
 /// Модель фильтра карточек авторов
-/// совмещенная с параметрами пагинации
 /// </summary>
 /// <remarks>Решил не переносить сюда пагинацию</remarks>
 public class AuthorFilterModel

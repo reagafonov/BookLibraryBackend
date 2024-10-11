@@ -69,11 +69,14 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="page">Страница</param>
         /// <param name="itemsPerPage">Число записей на странице</param>
+        /// <param name="filterModel">Фильтр</param>
         /// <returns>Список карточек книг</returns>
-        [HttpGet("list/{page}/{itemsPerPage}")]
-        public async Task<IActionResult> GetList(int page, int itemsPerPage)
+        [HttpPost("list/{page}/{itemsPerPage}")]
+        public async Task<IActionResult> GetList([FromQuery] BookFilterModel filterModel, [FromRoute] int page = 1,
+            [FromRoute] int itemsPerPage = 10)
         {
-            return Ok(mapper.Map<List<BookOutputModel>>(await service.GetPaged(page, itemsPerPage)));
+            var filterDto = mapper.Map<BookFilterDto>(filterModel);
+            return Ok(mapper.Map<List<BookOutputModel>>(await service.GetPaged(page, itemsPerPage, filterDto)));
         }
     }
 }

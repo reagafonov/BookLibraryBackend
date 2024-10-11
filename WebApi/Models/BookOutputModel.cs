@@ -25,11 +25,11 @@ namespace WebApi.Models
         /// <summary>
         /// Автор
         /// </summary>
-        public string MainAuthor { get; init; }
+        public AuthorOutputModel MainAuthor { get; init; }
 
         /// <summary>
         /// Соавторы книги
         /// </summary>
-        public List<string> CoAuthors { get; init; }
+        public List<AuthorOutputModel> CoAuthors { get; init; }
     }
 }

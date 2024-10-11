@@ -14,8 +14,9 @@ namespace Services.Abstractions
         /// </summary>
         /// <param name="page">номер страницы</param>
         /// <param name="pageSize">объем страницы</param>
+        /// <param name="filterDto"></param>
         /// <returns>Список книг</returns>
-        Task<ICollection<BookDto>> GetPaged(int page, int pageSize);
+        Task<ICollection<BookDto>> GetPaged(int page, int pageSize, BookFilterDto filterDto);
 
         /// <summary>
         /// Получить

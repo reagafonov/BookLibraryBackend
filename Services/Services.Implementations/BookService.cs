@@ -24,10 +24,12 @@ namespace Services.Implementations
         /// </summary>
         /// <param name="page">номер страницы</param>
         /// <param name="pageSize">объем страницы</param>
+        /// <param name="filterDto"></param>
         /// <returns>список книг</returns>
-        public async Task<ICollection<BookDto>> GetPaged(int page, int pageSize)
+        public async Task<ICollection<BookDto>> GetPaged(int page, int pageSize, BookFilterDto filterDto)
         {
-            ICollection<Book> entities = await bookRepository.GetPagedAsync(page, pageSize);
+            var filter = mapper.Map<BookFilter>(filterDto);
+            ICollection<Book> entities = await bookRepository.GetPagedAsync(page, pageSize, filter);
             return mapper.Map<ICollection<Book>, ICollection<BookDto>>(entities);
         }
 
@@ -57,6 +59,41 @@ namespace Services.Implementations
 
             var res = await bookRepository.AddAsync(entity);
 
+            await ProcessCoAuthors(bookDto, res);
+
+            await bookRepository.SaveChangesAsync();
+
+            return res.Id;
+        }
+
+        /// <summary>
+        /// Изменить
+        /// </summary>
+        /// <param name="id">идентификатор</param>
+        /// <param name="bookDto">ДТО книги</param>
+        public async Task Update(int id, BookDto bookDto)
+        {
+            bookValidation.Validate(bookDto);
+            var book = bookRepository.Get(id);
+            mapper.Map(bookDto, book);
+            book.CoAuthors?.Clear();
+            await ProcessCoAuthors(bookDto, book);
+            await bookRepository.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Удалить
+        /// </summary>
+        /// <param name="id">идентификатор</param>
+        public async Task Delete(int id)
+        {
+            var book = await bookRepository.GetAsync(id);
+            book.Deleted = true;
+            await bookRepository.SaveChangesAsync();
+        }
+
+        private async Task ProcessCoAuthors(BookDto bookDto, Book res)
+        {
             res.CoAuthors ??= new List<Author>();
 
             //Не добавленные авторы
@@ -79,35 +116,6 @@ namespace Services.Implementations
                     throw new CRUDUpdateException($"Не найден соавтор с ID {coAuthorsId}");
                 res.CoAuthors.Add(coAuthor);
             }
-
-            await bookRepository.SaveChangesAsync();
-
-            return res.Id;
-        }
-
-        /// <summary>
-        /// Изменить
-        /// </summary>
-        /// <param name="id">идентификатор</param>
-        /// <param name="bookDto">ДТО книги</param>
-        public async Task Update(int id, BookDto bookDto)
-        {
-            bookValidation.Validate(bookDto);
-            var entity = mapper.Map<BookDto, Book>(bookDto);
-            entity.Id = id;
-            bookRepository.Update(entity);
-            await bookRepository.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Удалить
-        /// </summary>
-        /// <param name="id">идентификатор</param>
-        public async Task Delete(int id)
-        {
-            var book = await bookRepository.GetAsync(id);
-            book.Deleted = true;
-            await bookRepository.SaveChangesAsync();
         }
     }
 }

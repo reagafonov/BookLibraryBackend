@@ -11,7 +11,10 @@ namespace Infrastructure.Repositories.Implementations
     /// <summary>
     /// Репозиторий работы с авторами
     /// </summary>
-    public class AuthorRepository(DatabaseContext context) : Repository<Author, int>(context), IAuthorRepository
+    public class AuthorRepository(
+        DatabaseContext context,
+        ISimpleFilterQuery<Author, AuthorFilter> authorSimpleFilterQuery)
+        : Repository<Author, int>(context), IAuthorRepository
     {
         /// <summary>
         /// Получить постраничный список
@@ -23,10 +26,8 @@ namespace Infrastructure.Repositories.Implementations
         public async Task<List<Author>> GetPagedAsync(int page, int itemsPerPage, AuthorFilter filter)
         {
             var query = GetAll();
-            if (!string.IsNullOrWhiteSpace(filter.FirstName))
-                query = query.Where(author => author.FirstName.Contains(filter.FirstName));
-            if (!string.IsNullOrWhiteSpace(filter.LastName))
-                query = query.Where(author => author.LastName.Contains(filter.LastName));
+
+            query = authorSimpleFilterQuery.Filter(query, filter);
 
             return await query
                 .Skip((page - 1) * itemsPerPage)
