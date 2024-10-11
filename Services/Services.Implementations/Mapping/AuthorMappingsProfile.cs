@@ -1,6 +1,8 @@
 using AutoMapper;
 using Domain.Entities;
+using Services.Abstractions;
 using Services.Contracts;
+using Services.Repositories.Abstractions;
 
 namespace Services.Implementations.Mapping
 {
@@ -14,10 +16,11 @@ namespace Services.Implementations.Mapping
             CreateMap<Author, AuthorDto>();
 
             CreateMap<AuthorDto, Author>()
-                .ForMember(d => d.Id, map => map.Ignore())
-                .ForMember(d => d.Deleted, map => map.Ignore())
-                .ForMember(x => x.BooksAuthor, x => x.Ignore())
-                .ForMember(x => x.BooksCoAuthor, x => x.Ignore());
+                .ForMember(author => author.Deleted, expression => expression.Ignore())
+                .ForMember(author => author.BooksAuthor, expression => expression.Ignore())
+                .ForMember(author => author.BookCoAuthors, expression => expression.Ignore());
+
+            CreateMap<AuthorFilterDto, AuthorFilter>();
         }
     }
 }

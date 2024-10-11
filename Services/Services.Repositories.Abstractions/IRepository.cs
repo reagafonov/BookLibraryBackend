@@ -27,6 +27,7 @@ namespace Services.Repositories.Abstractions
         /// <returns>была ли сущность удалена</returns>
         bool Delete(TPrimaryKey id);
 
+
         /// <summary>
         /// Удалить сущность
         /// </summary>
@@ -35,11 +36,19 @@ namespace Services.Repositories.Abstractions
         bool Delete(T entity);
 
         /// <summary>
+        /// Удалить сущность
+        /// </summary>
+        /// <param name="id">ID удалённой сущности</param>
+        /// <returns>была ли сущность удалена</returns>
+        Task<bool> DeleteAsync(TPrimaryKey id, CancellationToken token);
+
+        /// <summary>
         /// Удалить сущности
         /// </summary>
         /// <param name="entities">Коллекция сущностей для удаления</param>
         /// <returns>была ли операция удаления успешна</returns>
         bool DeleteRange(ICollection<T> entities);
+
 
         /// <summary>
         /// Для сущности проставить состояние - что она изменена
@@ -65,7 +74,7 @@ namespace Services.Repositories.Abstractions
         /// Добавить в базу массив сущностей
         /// </summary>
         /// <param name="entities">массив сущностей</param>
-        void AddRange(List<T> entities);
+        void AddRange(IEnumerable<T> entities);
 
         /// <summary>
         /// Добавить в базу массив сущностей
@@ -76,7 +85,7 @@ namespace Services.Repositories.Abstractions
         /// <summary>
         /// Сохранить изменения
         /// </summary>
-        void SaveChanges();
+        string SaveChanges();
 
         /// <summary>
         /// Сохранить изменения

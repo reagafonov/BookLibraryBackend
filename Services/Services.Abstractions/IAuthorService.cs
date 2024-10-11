@@ -14,8 +14,9 @@ namespace Services.Abstractions
         /// </summary>
         /// <param name="page">номер страницы</param>
         /// <param name="pageSize">объем страницы</param>
+        /// <param name="filter"></param>
         /// <returns>Список авторов</returns>
-        Task<ICollection<AuthorDto>> GetPaged(int page, int pageSize);
+        Task<ICollection<AuthorDto>> GetPaged(int page, int pageSize, AuthorFilterDto filter);
 
         /// <summary>
         /// Получить
@@ -27,16 +28,16 @@ namespace Services.Abstractions
         /// <summary>
         /// Создать
         /// </summary>
-        /// <param name="lessonDto">ДТО автора</param>
+        /// <param name="authorDto">ДТО автора</param>
         /// <returns>идентификатор</returns>
-        Task<int> Create(AuthorDto advertisementDto);
+        Task<int> Create(AuthorDto authorDto);
 
         /// <summary>
         /// Изменить
         /// </summary>
         /// <param name="id">идентификатор</param>
-        /// <param name="lessonDto">ДТО автора</param>
-        Task Update(int id, AuthorDto advertisementDto);
+        /// <param name="authorDto">ДТО автора</param>
+        Task Update(int id, AuthorDto authorDto);
 
         /// <summary>
         /// Удалить

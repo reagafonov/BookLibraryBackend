@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Entities.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Services.Repositories.Abstractions;
 
@@ -13,9 +15,9 @@ namespace Infrastructure.Repositories.Implementations
     /// </summary>
     /// <typeparam name="T">Тип сущности</typeparam>
     /// <typeparam name="TPrimaryKey">Основной ключ</typeparam>
-    public abstract class Repository<T, TPrimaryKey> : ReadRepository<T, TPrimaryKey>, IRepository<T, TPrimaryKey> where
-        T
-        : class, IEntity<TPrimaryKey>
+    public abstract class Repository<T, TPrimaryKey> : ReadRepository<T, TPrimaryKey>,
+        IRepository<T, TPrimaryKey>
+        where T : class, IEntity<TPrimaryKey>
     {
         protected Repository(DbContext context) : base(context)
         {
@@ -29,6 +31,23 @@ namespace Infrastructure.Repositories.Implementations
         public virtual bool Delete(TPrimaryKey id)
         {
             var obj = EntitySet.Find(id);
+            if (obj == null)
+            {
+                return false;
+            }
+
+            EntitySet.Remove(obj);
+            return true;
+        }
+
+        /// <summary>
+        /// Удалить сущность
+        /// </summary>
+        /// <param name="id">ID удалённой сущности</param>
+        /// <returns>была ли сущность удалена</returns>
+        public virtual async Task<bool> DeleteAsync(TPrimaryKey id, CancellationToken token)
+        {
+            var obj = await EntitySet.FindAsync(id, token);
             if (obj == null)
             {
                 return false;
@@ -104,7 +123,7 @@ namespace Infrastructure.Repositories.Implementations
         /// Добавить в базу массив сущностей
         /// </summary>
         /// <param name="entities">массив сущностей</param>
-        public virtual void AddRange(List<T> entities)
+        public virtual void AddRange(IEnumerable<T> entities)
         {
             var enumerable = entities as IList<T> ?? entities.ToList();
             Context.Set<T>().AddRange(enumerable);
@@ -127,9 +146,18 @@ namespace Infrastructure.Repositories.Implementations
         /// <summary>
         /// Сохранить изменения
         /// </summary>
-        public virtual void SaveChanges()
+        public virtual string SaveChanges()
         {
-            Context.SaveChanges();
+            try
+            {
+                Context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return e.InnerException?.Message ?? e.Message;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -137,7 +165,20 @@ namespace Infrastructure.Repositories.Implementations
         /// </summary>
         public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await Context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await Context.SaveChangesAsync(cancellationToken);
+            }
+            catch (AggregateException e)
+            {
+                var errors = string.Join('\n', e.InnerExceptions.Select(x => x.InnerException?.Message ?? x.Message));
+                throw new CRUDUpdateException(errors);
+            }
+            catch (Exception e)
+            {
+                var errors = e.InnerException?.Message ?? e.Message;
+                throw new CRUDUpdateException(errors);
+            }
         }
     }
 }

@@ -27,6 +27,6 @@ namespace Services.Contracts
         /// <summary>
         /// Соавторы книги
         /// </summary>
-        public ICollection<AuthorDto>? CoAuthors { get; init; }
+        public ICollection<AuthorDto> CoAuthors { get; init; }
     }
 }

@@ -1,8 +1,11 @@
-﻿using Infrastructure.EntityFramework;
+﻿using Domain.Entities;
+using Infrastructure.EntityFramework;
 using Infrastructure.Repositories.Implementations;
+using Infrastructure.Repositories.Implementations.Queries;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Abstractions;
+using Services.Contracts;
 using Services.Implementations;
 using Services.Repositories.Abstractions;
 using WebApi.Settings;
@@ -28,7 +31,11 @@ namespace WebApi
         {
             serviceCollection
                 .AddTransient<IBookService, BookService>()
-                .AddTransient<IAuthorService, AuthorService>();
+                .AddTransient<IAuthorService, AuthorService>()
+                .AddTransient<IValidateDto<AuthorDto>, AuthorValidate>()
+                .AddTransient<IValidateDto<BookDto>, BookValidation>();
+
+
             return serviceCollection;
         }
 
@@ -36,7 +43,10 @@ namespace WebApi
         {
             serviceCollection
                 .AddTransient<IBookRepository, BookRepository>()
-                .AddTransient<IAuthorRepository, AuthorRepository>();
+                .AddTransient<IAuthorRepository, AuthorRepository>()
+                .AddTransient<ISimpleFilterQuery<Author, AuthorFilter>, AuthorSimpleFilterQuery>()
+                .AddTransient<ISimpleFilterQuery<Book, BookFilter>, BookSimpleFilterQuery>();
+
             return serviceCollection;
         }
     }

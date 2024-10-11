@@ -11,21 +11,24 @@ namespace Infrastructure.Repositories.Implementations
     /// <summary>
     /// Репозиторий работы с авторами
     /// </summary>
-    public class AuthorRepository : Repository<Author, int>, IAuthorRepository
+    public class AuthorRepository(
+        DatabaseContext context,
+        ISimpleFilterQuery<Author, AuthorFilter> authorSimpleFilterQuery)
+        : Repository<Author, int>(context), IAuthorRepository
     {
-        public AuthorRepository(DatabaseContext context) : base(context)
-        {
-        }
-
         /// <summary>
         /// Получить постраничный список
         /// </summary>
         /// <param name="page">номер страницы</param>
         /// <param name="itemsPerPage">объем страницы</param>
+        /// <param name="filter">Фильтр запросов</param>
         /// <returns> Список авторов</returns>
-        public async Task<List<Author>> GetPagedAsync(int page, int itemsPerPage)
+        public async Task<List<Author>> GetPagedAsync(int page, int itemsPerPage, AuthorFilter filter)
         {
             var query = GetAll();
+
+            query = authorSimpleFilterQuery.Filter(query, filter);
+
             return await query
                 .Skip((page - 1) * itemsPerPage)
                 .Take(itemsPerPage)

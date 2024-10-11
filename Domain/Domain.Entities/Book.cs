@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -23,7 +24,8 @@ namespace Domain.Entities
         /// <summary>
         /// Идентификатор главного автора книги
         /// </summary>
-        public int MainAuthorID { get; init; }
+        [Required]
+        public int? MainAuthorId { get; set; }
 
         /// <summary>
         /// Автор
@@ -33,7 +35,7 @@ namespace Domain.Entities
         /// <summary>
         /// Соавторы книги
         /// </summary>
-        public virtual ICollection<Author>? CoAuthors { get; init; }
+        public virtual ICollection<Author>? CoAuthors { get; set; }
 
         /// <summary>
         /// Удалено
@@ -43,6 +45,7 @@ namespace Domain.Entities
         /// <summary>
         /// Книга
         /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
     }
 }

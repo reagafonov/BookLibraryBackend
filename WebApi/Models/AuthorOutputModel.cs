@@ -3,16 +3,21 @@
     /// <summary>
     /// Модель автора
     /// </summary>
-    public class AuthorModel
+    public record AuthorOutputModel
     {
+        /// <summary>
+        /// Идентификатор
+        /// </summary>
+        public int Id { get; init; }
+
         /// <summary>
         /// Фамилия автора
         /// </summary>
-        public string LastName { get; set; }
+        public string LastName { get; init; }
 
         /// <summary>
         /// Имя автора
         /// </summary>
-        public string FirstName { get; set; }
+        public string FirstName { get; init; }
     }
 }

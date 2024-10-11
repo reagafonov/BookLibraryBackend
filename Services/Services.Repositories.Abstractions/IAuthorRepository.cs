@@ -14,7 +14,8 @@ namespace Services.Repositories.Abstractions
         /// </summary>
         /// <param name="page">номер страницы</param>
         /// <param name="itemsPerPage">объем страницы</param>
+        /// <param name="filter"></param>
         /// <returns> Список книг</returns>
-        Task<List<Author>> GetPagedAsync(int page, int itemsPerPage);
+        Task<List<Author>> GetPagedAsync(int page, int itemsPerPage, AuthorFilter filter);
     }
 }

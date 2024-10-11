@@ -8,7 +8,7 @@ namespace Infrastructure.EntityFramework
     /// <summary>
     /// Фабрика для создания контекста БД, используется для механизма миграций
     /// </summary>
-    public abstract class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
+    public class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
     {
         /// <summary>Creates a new instance of a derived context.</summary>
         /// <param name="args"> Arguments provided by the design-time service. </param>
@@ -27,7 +27,6 @@ namespace Infrastructure.EntityFramework
             }
 
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            //dbContextOptionsBuilder.UseSqlServer(connectionString);
             dbContextOptionsBuilder.UseNpgsql(connectionString,
                 opt => opt.MigrationsAssembly("Infrastructure.EntityFramework"));
             return new DatabaseContext(dbContextOptionsBuilder.Options);
