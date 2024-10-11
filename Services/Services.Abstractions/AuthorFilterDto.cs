@@ -13,5 +13,5 @@ public class AuthorFilterDto
     /// <summary>
     /// Шаблон поиска по части фамилии
     /// </summary>
-    public string? LastName { get; set; }
+    public string? LastName { get; init; }
 }

@@ -44,7 +44,6 @@ namespace Infrastructure.EntityFramework.Migrations
                         .HasColumnName("FirstName");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("LastName");

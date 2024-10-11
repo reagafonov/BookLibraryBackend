@@ -13,6 +13,6 @@ public static class DomainConstraints
     public static int AuthorFirstNameMaxLength => 500;
     public static bool AuthorFirstNameIsRequired => true;
     public static int AuthorLastNameMaxLength => 500;
-    public static bool AuthorLastNameIsRequired => true;
+    public static bool AuthorLastNameIsRequired => false;
     public static bool IsCheckForSameLanguageFirstNameAndLastName => true;
 }

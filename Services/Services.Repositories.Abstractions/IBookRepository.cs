@@ -2,20 +2,19 @@
 using System.Threading.Tasks;
 using Domain.Entities;
 
-namespace Services.Repositories.Abstractions
+namespace Services.Repositories.Abstractions;
+
+/// <summary>
+/// Интерфейс репозитория работы с книгами
+/// </summary>
+public interface IBookRepository : IRepository<Book, int>
 {
     /// <summary>
-    /// Интерфейс репозитория работы с книгами
+    /// Получить постраничный список
     /// </summary>
-    public interface IBookRepository : IRepository<Book, int>
-    {
-        /// <summary>
-        /// Получить постраничный список
-        /// </summary>
-        /// <param name="page">номер страницы</param>
-        /// <param name="itemsPerPage">объем страницы</param>
-        /// <param name="filter"></param>
-        /// <returns> Список книг</returns>
-        Task<List<Book>> GetPagedAsync(int page, int itemsPerPage, BookFilter filter);
-    }
+    /// <param name="page">номер страницы</param>
+    /// <param name="itemsPerPage">объем страницы</param>
+    /// <param name="filter"></param>
+    /// <returns> Список книг</returns>
+    Task<List<Book?>> GetPagedAsync(int page, int itemsPerPage, BookFilter filter);
 }

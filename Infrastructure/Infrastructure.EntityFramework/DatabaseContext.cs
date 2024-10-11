@@ -1,27 +1,26 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.EntityFramework
+namespace Infrastructure.EntityFramework;
+
+/// <summary>
+/// Контекст
+/// </summary>
+public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
 {
     /// <summary>
-    /// Контекст
+    /// Книги
     /// </summary>
-    public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
+    public DbSet<Book> Books { get; init; } = null!;
+
+    /// <summary>
+    /// Авторы
+    /// </summary>
+    public DbSet<Author> Authors { get; init; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        /// <summary>
-        /// Книги
-        /// </summary>
-        public DbSet<Book> Books { get; set; }
-
-        /// <summary>
-        /// Авторы
-        /// </summary>
-        public DbSet<Author> Authors { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
-        }
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 }

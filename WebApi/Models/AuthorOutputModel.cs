@@ -1,23 +1,22 @@
-﻿namespace WebApi.Models
+﻿namespace WebApi.Models;
+
+/// <summary>
+/// Модель автора
+/// </summary>
+public record AuthorOutputModel
 {
     /// <summary>
-    /// Модель автора
+    /// Идентификатор
     /// </summary>
-    public record AuthorOutputModel
-    {
-        /// <summary>
-        /// Идентификатор
-        /// </summary>
-        public int Id { get; init; }
+    public int Id { get; init; }
 
-        /// <summary>
-        /// Фамилия автора
-        /// </summary>
-        public string LastName { get; init; }
+    /// <summary>
+    /// Фамилия автора
+    /// </summary>
+    public string? LastName { get; init; }
 
-        /// <summary>
-        /// Имя автора
-        /// </summary>
-        public string FirstName { get; init; }
-    }
+    /// <summary>
+    /// Имя автора
+    /// </summary>
+    public required string FirstName { get; init; }
 }

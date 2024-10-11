@@ -1,7 +1,7 @@
 using Domain.Entities;
 using Services.Contracts;
 
-namespace Services.Implementations;
+namespace Services.Implementations.Validation;
 
 public class AuthorValidate : ValidationBase<AuthorDto>
 {

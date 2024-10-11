@@ -1,4 +1,4 @@
-namespace Infrastructure.EntityFramework;
+namespace Infrastructure.EntityFramework.NPgSqlConfiguration;
 
 public static class NpgSqlConstants
 {

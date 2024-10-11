@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using Domain.Entities;
+using Services.Repositories.Abstractions;
 using WebApi.Models;
 
 namespace WebApi.Validation;
@@ -9,7 +11,7 @@ namespace WebApi.Validation;
 /// Проверяет, что фамилия и имя автора заполнены на одном языке.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class AuthorNameLanguageValidationAttribute : ValidationAttribute
+public partial class AuthorNameLanguageValidationAttribute : ValidationAttribute
 {
     /// <summary>
     /// Часто повторяемая операция возврата ошибки
@@ -28,21 +30,26 @@ public class AuthorNameLanguageValidationAttribute : ValidationAttribute
     /// </summary>
     /// <param name="data">текст</param>
     /// <returns>Истина, если текст на английском</returns>
-    private bool IsEnglish(string data) => Regex.Match(data, @"^[\p{IsBasicLatin}\p{P}\d\s ]+$").Success;
+    private static bool IsEnglish(string data) => IsEnglishRegex().Match(data).Success;
 
     /// <summary>
     /// Проверяет является ли строка текстом на русском языке
     /// </summary>
     /// <param name="data">текст</param>
     /// <returns>Истина, если текст на русском</returns>
-    private bool IsRussian(string data) => Regex.Match(data, @"^[\p{IsCyrillic}\p{P}\d\s ]+$").Success;
+    private static bool IsRussian(string data) => IsRussianRegex().Match(data).Success;
 
-    private LanguageEnum? GetLanguage(string data)
+    private static LanguageEnum? GetLanguage(string? data)
     {
+        if (string.IsNullOrWhiteSpace(data))
+            return null;
+       
         if (IsEnglish(data))
             return LanguageEnum.English;
+        
         if (IsRussian(data))
             return LanguageEnum.Russian;
+        
         return null;
     }
 
@@ -51,18 +58,23 @@ public class AuthorNameLanguageValidationAttribute : ValidationAttribute
     /// </summary>
     /// <param name="value">Переданный объект класса, для которого установлен атрибут</param>
     /// <returns>Истина, если объект валиден, для этого атрибута</returns>
-    public override bool IsValid(object value)
+    public override bool IsValid(object? value)
     {
-        if (value is AuthorInputModel model)
+        if (!DomainConstraints.IsCheckForSameLanguageFirstNameAndLastName)
+            return true;
+        
+        if (value is not AuthorInputModel model) return base.IsValid(value);
+        
+        var firstName = model.FirstName;
+        var lastName = model.LastName;
+        var firstNameLanguage = GetLanguage(firstName);
+        if (firstNameLanguage is null)
         {
-            var firstName = model.FirstName;
-            var lastName = model.LastName;
-            var firstNameLanguage = GetLanguage(firstName);
-            if (firstNameLanguage is null)
-            {
-                return Error("Не распознан язык имени");
-            }
+            return Error("Не распознан язык имени");
+        }
 
+        if (!string.IsNullOrWhiteSpace(lastName))
+        {
             var lastNameLanguage = GetLanguage(lastName);
             if (lastNameLanguage is null)
             {
@@ -73,10 +85,14 @@ public class AuthorNameLanguageValidationAttribute : ValidationAttribute
             {
                 return Error($"Разные языки имени ({firstNameLanguage}) и фамилии ({lastNameLanguage})");
             }
-
-            return true;
         }
 
-        return base.IsValid(value);
+        return true;
+
     }
+
+    [GeneratedRegex(@"^[\p{IsBasicLatin}\p{P}\d\s ]+$")]
+    private static partial Regex IsEnglishRegex();
+    [GeneratedRegex(@"^[\p{IsCyrillic}\p{P}\d\s ]+$")]
+    private static partial Regex IsRussianRegex();
 }

@@ -2,7 +2,7 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.EntityFramework.Configuration;
+namespace Infrastructure.EntityFramework.NPgSqlConfiguration;
 
 /// <summary>
 /// Автоматически подключаемая конфигурация для таблицы авторов
@@ -20,7 +20,7 @@ public class AuthorConfiguration : IEntityTypeConfiguration<Author>
             .HasColumnName("FirstName");
         builder.Property(x => x.LastName)
             .HasMaxLength(DomainConstraints.AuthorLastNameMaxLength)
-            .IsRequired(DomainConstraints.AuthorFirstNameIsRequired)
+            .IsRequired(DomainConstraints.AuthorLastNameIsRequired)
             .HasColumnName("LastName");
         builder.Property(x => x.Deleted)
             .IsRequired()
