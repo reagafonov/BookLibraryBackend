@@ -26,7 +26,7 @@ public abstract class ValidationBase<TDto> : IValidateDto<TDto>
     private static string GetMaxLengthErrorString(string fieldName, int maxLength)
         => $"Превышена максимальная длина {maxLength} поля {fieldName}";
 
-    void AddError(string error) => _errors.Add(error);
+    protected void AddError(string error) => _errors.Add(error);
 
     protected void CheckRequired<TData>(TData data, string fieldName)
     {
